@@ -45,6 +45,8 @@ public class ItemKeeper : MonoBehaviour
             rbody.gravityScale = 2.5f;
             rbody.AddForce(new Vector2(0, 6), ForceMode2D.Impulse);
             Destroy(collision.gameObject, 0.5f);
+
+            SoundManager.soundManager.SEPlay(SEType.ItemGet); //SEを鳴らす
         }    
     }
 }

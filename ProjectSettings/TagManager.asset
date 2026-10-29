@@ -6,6 +6,11 @@ TagManager:
   tags:
   - Enemy
   - Arrow
+  - Sword
+  - Item
+  - ItemBox
+  - Exit
+  - Door
   layers:
   - Default
   - TransparentFX

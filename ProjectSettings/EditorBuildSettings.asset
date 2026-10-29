@@ -6,6 +6,21 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/Title.unity
+    guid: 7d90ff21afd7be14d865195407c4d706
+  - enabled: 1
+    path: Assets/Scenes/DungeonMap.unity
+    guid: 269a3110e144223418ba9604259be086
+  - enabled: 1
+    path: Assets/Scenes/Island1.unity
+    guid: 13e7c4ed4e74c964f9131234874567df
+  - enabled: 1
+    path: Assets/Scenes/BossStage.unity
+    guid: 1c2b76d62c729b544b92016a25fa280d
+  - enabled: 1
+    path: Assets/Scenes/Island2.unity
+    guid: 8773bd7354820aa419bc0e53a627ade4
+  - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   m_configObjects:

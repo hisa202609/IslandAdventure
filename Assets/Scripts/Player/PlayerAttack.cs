@@ -50,6 +50,8 @@ public class PlayerAttack : MonoBehaviour
     {
         if (_arrowAttackCoroutine == null)
         {
+            SoundManager.soundManager.SEPlay(SEType.Shoot); //SEを鳴らす
+
             float currentAngleZ = _playerMove.GetAngle(); //現在のPlayer角度を取得
 
             _bowObj.transform.localScale = new Vector3(1, 1, 1); //弓の変形を戻す
@@ -89,8 +91,11 @@ public class PlayerAttack : MonoBehaviour
     //剣を振る
     void Slash()
     {
+
+        SoundManager.soundManager.SEPlay(SEType.Slash); //SEを鳴らす
+
         //ソードも、矢もコルーチンがまだ発動してなければ実行(null)
-        if(_swordAttackCoroutine == null && _arrowAttackCoroutine == null)
+        if (_swordAttackCoroutine == null && _arrowAttackCoroutine == null)
         {
             _bowObj.SetActive(false); //弓の存在を一時消しておく
             float currentAngleZ = _playerMove.GetAngle(); //現在のPlayer角度を取得
