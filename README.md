@@ -252,7 +252,7 @@ IEnumerator SwordAttack(GameObject swordEffectObj)
 
 ```mermaid
 flowchart TD
-    A[弓のボタンを押し続ける] --> B{Keyboard&Mouse?}
+    A[弓のボタンを押し続ける] --> B{操作はキーボード＆マウスか？}
     B -->|Yes| C[カーソル座標をワールド座標に変換]
     C --> D[Atan2で照準角度を計算]
     D --> E[SetAimAngleで向きを更新]
