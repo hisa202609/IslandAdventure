@@ -25,18 +25,49 @@ public class PlayerAttack : MonoBehaviour
     private float _pressTime;                    // 長押し時間記録
 
     private PlayerMove _playerMove;　//PlayerMoveコンポーネントを参照する変数
+    private PlayerInput _playerInput;
 
     private UIController _uiCnt; //UIControllerコンポーネントを参照する変数
+
+    float GetMouseAngle()
+    {
+        Vector2 mousePos = Mouse.current.position.ReadValue();
+
+        float distance = transform.position.z - Camera.main.transform.position.z;
+
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(
+            new Vector3(mousePos.x, mousePos.y, distance)
+        );
+
+        Vector2 direction = mouseWorldPos - transform.position;
+
+        float angle =
+            Mathf.Atan2(direction.y, direction.x)
+            * Mathf.Rad2Deg;
+
+        return angle;
+    }
 
     // 弓Attackアクションのコールバック
     void OnAttackCallback(InputAction.CallbackContext context)
     {
-        // 矢を持っている
+        // ボタンを離した瞬間のマウス方向を取得
+        if (_playerInput.currentControlScheme == "Keyboard&Mouse"
+            && Mouse.current != null)
+        {
+            _playerMove.SetAimAngle(GetMouseAngle());
+        }
+
         if (ItemKeeper.hasArrows > 0)
         {
-            if(_swordAttackCoroutine == null)
-            ShootArrow();       //矢を発射
+            if (_swordAttackCoroutine == null)
+            {
+                ShootArrow();
+            }
         }
+
+        // 射撃後は通常の向き制御に戻す
+        _playerMove.StopAim();
     }
 
     // 剣Attackアクションのコールバック
@@ -155,14 +186,14 @@ public class PlayerAttack : MonoBehaviour
         _swordObj.transform.SetParent(transform); // 剣の親にプレイヤーキャラクターを設定する
 
         //Attackアクションにコールバックを設定
-        PlayerInput input = GetComponent<PlayerInput>();
-        _bowAttackAction = input.currentActionMap.FindAction("Attack");
+        _playerInput = GetComponent<PlayerInput>();
+        _bowAttackAction = _playerInput.currentActionMap.FindAction("Attack");
         _bowAttackAction.canceled += OnAttackCallback;                  // キャンセルコールバック登録
 
-        _swordAttackAction = input.currentActionMap.FindAction("Jump");
+        _swordAttackAction = _playerInput.currentActionMap.FindAction("Jump");
         _swordAttackAction.started += OnLongPressStarted;                 // 開始コールバック登録
 
-        InputActionMap uiMap = input.actions.FindActionMap("UI");   // UIマップ取得
+        InputActionMap uiMap = _playerInput.actions.FindActionMap("UI"); // UIマップ取得
         uiMap.Disable();                                            // UIマップ無効化
 
         _uiCnt = GameObject.FindFirstObjectByType<UIController>();   // シーン中のUIController取得
@@ -170,22 +201,44 @@ public class PlayerAttack : MonoBehaviour
 
     void Update()
     {
-        float currentAngleZ = _playerMove.GetAngle();　//現在のPlayer角度を取得
+        // チャージ中はマウスカーソルの方向を向く
+        if (_bowAttackAction.IsPressed()
+            && _playerInput.currentControlScheme == "Keyboard&Mouse"
+            && Mouse.current != null)
+        {
+            float mouseAngle = GetMouseAngle();
+            _playerMove.SetAimAngle(mouseAngle);
+        }
+        else
+        {
+            _playerMove.StopAim();
+        }
+        
+        float currentAngleZ = _playerMove.GetAngle();
 
         DrawAttackItemPosition(currentAngleZ);
 
         //矢を持っている
         if (ItemKeeper.hasArrows > 0)
         {
-            //長押し時間
             _pressTime = _bowAttackAction.GetTimeoutCompletionPercentage();
+
             if (_pressTime > 0)
             {
-                //長押し時間に合わせて弓を変形させる
-                _bowObj.transform.localScale = new Vector3(1 - (_pressTime * 0.2f), 1 + (_pressTime * 0.5f), 1);
+                _bowObj.transform.localScale =
+                    new Vector3(
+                        1 - (_pressTime * 0.2f),
+                        1 + (_pressTime * 0.5f),
+                        1
+                    );
 
-                _uiCnt.UpdatePower(_pressTime);	                                        // パワーを更新
+                _uiCnt.UpdatePower(_pressTime);
             }
+        }
+        else
+        {
+            _pressTime = 0;
+            _uiCnt.UpdatePower(0);
         }
     }
 

@@ -37,12 +37,20 @@ public class PlayerMove : MonoBehaviour
     // Z軸の角度をfloatで返す
     public float GetAngle()
     {
-        float angle = _angleZ;       // とりあえず前フレームの角度を代入
-        if (_moveVec != Vector2.zero) //移動ベクトルがゼロでなければ書き替え
+        // 照準中はマウス方向の角度を返す
+        if (_isAiming)
         {
-            float rad = Mathf.Atan2(_moveVec.y, _moveVec.x);  // Atan2で現フレームの向きのZ軸の角度(ラジアン)を求める
-            angle = rad * Mathf.Rad2Deg;                    // Z軸のラジアンをデグリー値（度）に変換
+            return _aimAngleZ;
         }
+
+        float angle = _angleZ;
+
+        if (_moveVec != Vector2.zero)
+        {
+            float rad = Mathf.Atan2(_moveVec.y, _moveVec.x);
+            angle = rad * Mathf.Rad2Deg;
+        }
+
         return angle;
     }
 
@@ -55,6 +63,20 @@ public class PlayerMove : MonoBehaviour
         else if (_angleZ >= -135 && _angleZ <= -45) dir = Direction.down;   // 下向き
         else dir = Direction.left;   // 左向き
         return dir;
+    }
+
+    private bool _isAiming = false;
+    private float _aimAngleZ;
+
+    public void SetAimAngle(float angle)
+    {
+        _isAiming = true;
+        _aimAngleZ = angle;
+    }
+
+    public void StopAim()
+    {
+        _isAiming = false;
     }
 
     private void Awake()
